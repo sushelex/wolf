@@ -20,8 +20,24 @@ pipeline {
 		}
         stage('deploy build in staging area'){
             steps{
-            echo 'sushil kumar'
                 build job: 'deploy_pipeline_test'
+            }
+        }
+
+        stage('deploy to production'){
+            steps{
+                timeout(time:5, unit:'DAYS'){
+                    input message:'approve production deployment'
+                }
+            }
+            build job : 'deploy_prod_pipeline'
+        }
+        post{
+            success{
+                echo 'deployment is successful and credit goes to sushil'
+            }
+            failure{
+                echo 'deployment is failed'
             }
         }
 	}
