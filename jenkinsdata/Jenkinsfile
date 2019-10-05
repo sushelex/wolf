@@ -18,27 +18,21 @@ pipeline {
 				}
 			}
 		}
-        stage('deploy build in staging area'){
+        stage{
             steps{
-                build job: 'deploy_pipeline_test'
+                timeout(time : 5, unit:'DAYS'){
+                    input message : 'approve the production deployment?'
+                }
+                build job : 'deploy_prod_pipeline'
             }
-        }
-
-        stage('deploy to production'){
-            steps{
-                timeout(time:5, unit:'DAYS'){
-                    input message:'approve production deployment'
+            post{
+                success{
+                    echo 'prod deployment is successful'
+                }
+                failure{
+                    echo 'prod deployment is failed'
                 }
             }
-            build job : 'deploy_prod_pipeline'
         }
-        post{
-            success{
-                echo 'deployment is successful and credit goes to sushil'
-            }
-            failure{
-                echo 'deployment is failed'
-            }
-        }
-	}
+    }
 }
